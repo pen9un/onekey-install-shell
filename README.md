@@ -1,9 +1,9 @@
-一键安装脚本
-===========
-##这里感谢各位大神们开发的各种牛逼软件
+frps一键安装脚本，更新版本号到 v0.34.3
 
-脚本是业余爱好，英文属于文盲，写的不好，欢迎您批评指正。
+frp：https://github.com/fatedier/frp
 
-安装平台：CentOS、Debian、Ubuntu。
+引用脚本：https://github.com/clangcn/onekey-install-shell/blob/master/frps/install-frps.sh
+
+安装平台：CentOS、Debian、Ubuntu
 
 如需帮助请看相关README文件
