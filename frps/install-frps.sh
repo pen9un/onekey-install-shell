@@ -12,9 +12,12 @@ version="1.8.5"
 str_program_dir="/usr/local/${program_name}"
 program_init="/etc/init.d/${program_name}"
 program_config_file="frps.ini"
-ver_file="/tmp/.frp_ver.sh"
 program_version_link="https://raw.githubusercontent.com/pen9un/onekey-install-shell/master/frps/version.sh"
 str_install_shell=https://raw.githubusercontent.com/pen9un/onekey-install-shell/master/frps/install-frps.sh
+# version.sh
+export FRPS_VER=0.34.3
+export FRPS_INIT="https://raw.githubusercontent.com/pen9un/onekey-install-shell/master/frps/frps.init"
+export github_download_url="https://github.com/fatedier/frp/releases/download"
 shell_update(){
     fun_clangcn "clear"
     echo "Check updates for shell..."
@@ -165,32 +168,14 @@ fun_randstr(){
     strRandomPass=`tr -cd '[:alnum:]' < /dev/urandom | fold -w ${strNum} | head -n1`
     echo ${strRandomPass}
 }
-fun_get_version(){
-    rm -f ${ver_file}
-    if ! wget --no-check-certificate -qO ${ver_file} ${program_version_link}; then
-        echo -e "${COLOR_RED}Failed to download version.sh${COLOR_END}"
-    fi
-    if [ -s ${ver_file} ]; then
-        [ -x ${ver_file} ] && chmod +x ${ver_file}
-        . ${ver_file}
-    fi
-    if [ -z ${FRPS_VER} ] || [ -z ${FRPS_INIT} ] || [ -z ${aliyun_download_url} ] || [ -z ${github_download_url} ]; then
-        echo -e "${COLOR_RED}Error: ${COLOR_END}Get Program version failed!"
-        exit 1
-    fi
-}
 fun_getServer(){
     def_server_url="aliyun"
     echo ""
     echo -e "Please select ${program_name} download url:"
-    echo -e "[1].aliyun (default)"
     echo -e "[2].github"
     read -p "Enter your choice (1, 2 or exit. default [${def_server_url}]): " set_server_url
     [ -z "${set_server_url}" ] && set_server_url="${def_server_url}"
     case "${set_server_url}" in
-        1|[Aa][Ll][Ii][Yy][Uu][Nn])
-            program_download_url=${aliyun_download_url}
-            ;;
         2|[Gg][Ii][Tt][Hh][Uu][Bb])
             program_download_url=${github_download_url}
             ;;
@@ -198,7 +183,7 @@ fun_getServer(){
             exit 1
             ;;
         *)
-            program_download_url=${aliyun_download_url}
+            program_download_url=${github_download_url}
             ;;
     esac
     echo "---------------------------------------"
@@ -337,7 +322,6 @@ pre_install_clang(){
     else
         clear
         fun_clangcn
-        fun_get_version
         fun_getServer
         fun_getVer
         echo -e "Loading You Server IP, please wait..."
@@ -788,7 +772,6 @@ update_program_server_clang(){
         checkos
         check_centosversion
         check_os_bit
-        fun_get_version
         remote_init_version=`wget --no-check-certificate -qO- ${FRPS_INIT} | sed -n '/'^version'/p' | cut -d\" -f2`
         local_init_version=`sed -n '/'^version'/p' ${program_init} | cut -d\" -f2`
         install_shell=${strPath}
